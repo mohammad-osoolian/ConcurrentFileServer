@@ -89,10 +89,29 @@ func (api *APIImpl) UploadFile(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (api *APIImpl) CheckFile(w http.ResponseWriter, r *http.Request) {
+	fileId := r.FormValue("file_id")
+	var body RequestDownloadJson
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err == nil && body.FileId != "" {
+		fileId = body.FileId
+	}
+
+	if fileId == "" {
+		ErrorResponse(w, "Error: file_id not specified")
+		return
+	}
+
+	response := CheckfileResponseJson{Ok: api.handler.CheckFileExists(fileId)}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func (api *APIImpl) SetupRoutes() {
 	http.HandleFunc("/", api.Home)
 	http.HandleFunc("/upload", api.UploadFile)
 	http.HandleFunc("/download", api.DownloadFile)
+	http.HandleFunc("/checkfile", api.CheckFile)
 	fmt.Println("Listening...")
 	http.ListenAndServe(":8000", nil)
 }

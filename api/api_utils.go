@@ -15,6 +15,10 @@ type ResponseJson struct {
 	FileId string `json:"file_id"`
 }
 
+type CheckfileResponseJson struct {
+	Ok bool `json:"ok"`
+}
+
 type RequestUploadJson struct {
 	File string `json:"file"`
 }
